@@ -1,18 +1,63 @@
-/**
- * Calcula un par de colores (para el panel y su pie de página) basado en la profundidad de navegación.
- * @param {number} depth - El nivel de profundidad del panel (0 para el panel raíz).
- * @returns {{panelColor: string, footerColor: string}}
- */
+// --- INICIO: Lógica del Grafo de Navegación ---
+
+// Almacenamos los datos del grafo
+const graphNodes = new vis.DataSet();
+const graphEdges = new vis.DataSet();
+
+// Función para añadir un nodo (una página) al grafo si no existe
+function addNode(id) {
+    if (!graphNodes.get(id)) {
+        graphNodes.add({ id: id, label: id });
+    }
+}
+
+// Función para añadir una arista (un enlace) entre dos páginas
+function addEdge(from, to) {
+    // Evitamos añadir aristas duplicadas
+    const edgeId = `${from}->${to}`;
+    if (!graphEdges.get(edgeId)) {
+        graphEdges.add({ id: edgeId, from: from, to: to, arrows: 'to' });
+    }
+}
+
+// Función que dibuja el grafo en el contenedor
+function drawGraph() {
+    const container = document.getElementById('graph-container');
+    const data = { nodes: graphNodes, edges: graphEdges };
+    const options = {
+        layout: {
+            hierarchical: {
+                enabled: true,
+                direction: 'LR', // De Izquierda a Derecha
+                sortMethod: 'directed',
+            },
+        },
+        physics: {
+            enabled: false, // Desactivamos físicas para un layout más estable
+        },
+        nodes: {
+            shape: 'box',
+            color: '#e0eaff',
+            font: {
+                color: '#333'
+            },
+            borderWidth: 1,
+            borderColor: '#b3c7ff',
+        },
+        edges: {
+            color: '#848484',
+        },
+    };
+    new vis.Network(container, data, options);
+}
+
+// --- FIN: Lógica del Grafo de Navegación ---
+
+
+// Función para calcular colores
 function getColorForDepth(depth) {
-    const baseHue = 210; // Un azul base
-    const hueIncrement = 25; // Cuánto cambia el color en cada nivel
-    const saturation = 30;
-    const panelLightness = 97; // Un color de fondo muy claro, casi blanco
-    const footerLightness = 92; // Un tono ligeramente más oscuro para el pie de página
-
-    // Calcula el nuevo tono, asegurándose de que se mantenga en el rango de 0-360
+    const baseHue = 210, hueIncrement = 25, saturation = 30, panelLightness = 97, footerLightness = 92;
     const hue = (baseHue + (depth * hueIncrement)) % 360;
-
     return {
         panelColor: `hsl(${hue}, ${saturation}%, ${panelLightness}%)`,
         footerColor: `hsl(${hue}, ${saturation}%, ${footerLightness}%)`
@@ -21,19 +66,47 @@ function getColorForDepth(depth) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const mainContainer = document.getElementById('main-container');
-
-    // Colorear el panel inicial al cargar la página
     const initialPanel = mainContainer.querySelector('.panel');
+
+    // --- INICIO: Inicialización del Grafo y Modal ---
+
+    // Añadir el nodo inicial del grafo
+    if (initialPanel) {
+        const initialId = initialPanel.dataset.id;
+        addNode(initialId);
+    }
+    
+    // Elementos del Modal
+    const modal = document.getElementById('graph-modal');
+    const showGraphBtn = document.getElementById('show-graph-btn');
+    const closeGraphBtn = document.getElementById('close-graph-btn');
+
+    showGraphBtn.addEventListener('click', () => {
+        drawGraph();
+        modal.style.display = 'flex';
+    });
+
+    closeGraphBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    // Cerrar el modal si se hace clic fuera del contenido
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // --- FIN: Inicialización del Grafo y Modal ---
+
+    // Colorear panel inicial
     if (initialPanel) {
         const initialPath = JSON.parse(initialPanel.dataset.path || '[]');
         const initialDepth = initialPath.length - 1;
         const colors = getColorForDepth(initialDepth);
-
         initialPanel.style.backgroundColor = colors.panelColor;
         const initialFooter = initialPanel.querySelector('.panel-footer');
-        if (initialFooter) {
-            initialFooter.style.backgroundColor = colors.footerColor;
-        }
+        if (initialFooter) initialFooter.style.backgroundColor = colors.footerColor;
     }
 
     // Listener de eventos principal
@@ -42,23 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (clickedElement.tagName === 'A' && clickedElement.href) {
             event.preventDefault();
-            handleLinkClick(clickedElement);
+            await handleLinkClick(clickedElement);
         }
 
         if (clickedElement.matches('.close-btn')) {
             const panelToRemove = clickedElement.closest('.panel');
-            if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
-                panelToRemove.remove();
-            }
+            if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) panelToRemove.remove();
         }
 
         if (clickedElement.matches('.close-all-btn')) {
             let currentPanel = clickedElement.closest('.panel');
             while (currentPanel) {
                 const nextPanel = currentPanel.nextElementSibling;
-                if (currentPanel !== mainContainer.firstElementChild) {
-                    currentPanel.remove();
-                }
+                if (currentPanel !== mainContainer.firstElementChild) currentPanel.remove();
                 currentPanel = nextPanel;
             }
         }
@@ -67,11 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleLinkClick(linkElement) {
         const url = linkElement.href;
         const parentPanel = linkElement.closest('.panel');
+        const parentId = parentPanel.dataset.id;
+        
         const parentPath = JSON.parse(parentPanel.dataset.path || '[]');
         const newPageName = linkElement.textContent;
+        const newId = newPageName; // Usamos el texto del enlace como ID único
         const newPath = [...parentPath, newPageName];
         const depth = newPath.length - 1;
         const colors = getColorForDepth(depth);
+
+        // --- Actualización del Grafo ---
+        addNode(newId);
+        addEdge(parentId, newId);
+        // -----------------------------
 
         try {
             const response = await fetch(url);
@@ -83,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             newPanel.classList.add('panel');
             newPanel.dataset.path = JSON.stringify(newPath);
+            newPanel.dataset.id = newId; // Guardamos el ID en el panel
             newPanel.style.backgroundColor = colors.panelColor;
             
             newPanel.innerHTML = `
