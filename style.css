@@ -14,14 +14,17 @@ body, html {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    height: 100vh;
+    height: 100%; /* Se ajusta para que el scroll siga funcionando */
     width: fit-content;
+    padding-bottom: 40px; /* Espacio para la cinta cronológica */
+    box-sizing: border-box;
 }
 
 .panel {
     width: 550px;
     min-width: 550px;
-    height: 100vh;
+    /* CAMBIO: La altura se ajusta para dejar espacio a la cinta */
+    height: calc(100vh - 40px); 
     flex-shrink: 0;
     box-sizing: border-box;
     border-right: 1px solid #dcdcdc;
@@ -31,96 +34,64 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-/* --- CAMBIO: La animación ahora se aplica al contenido interno --- */
 .panel-animated .panel-content {
-    /* Inicialmente invisible para que la animación funcione */
     opacity: 0;
-    /* Aplicamos la nueva animación de revelado */
     animation: revealContent 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes revealContent {
-    from {
-        opacity: 0;
-        /* El contenido empieza "recortado" desde la derecha */
-        clip-path: inset(0 100% 0 0);
-    }
-    to {
-        opacity: 1;
-        /* El contenido termina completamente visible */
-        clip-path: inset(0 0 0 0);
-    }
+    from { opacity: 0; clip-path: inset(0 100% 0 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
 }
 
-
-/* Estilos para el botón del mapa y la ventana modal */
-#show-graph-btn {
+/* --- NUEVO: Estilos para la Cinta Cronológica --- */
+#timeline-container {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease-in-out;
-}
-
-#show-graph-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 80%;
-    height: 80%;
-    max-width: 1000px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    position: relative;
+    height: 40px;
+    background-color: #ffffff;
+    border-top: 1px solid #dcdcdc;
     display: flex;
-    flex-direction: column;
+    z-index: 1500;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    padding: 4px;
+    box-sizing: border-box;
+    gap: 4px;
 }
 
-.close-modal-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 2.5rem;
-    color: #aaa;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.close-modal-btn:hover { color: #333; }
-
-#graph-container {
-    width: 100%;
+.timeline-block {
+    flex: 1 1 0px;
     height: 100%;
-    border: 1px solid #eee;
-    margin-top: 1rem;
-    flex-grow: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    position: relative;
 }
+
+.timeline-block:hover {
+    transform: scaleY(1.1);
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+}
+/* --- Fin de nuevos estilos --- */
+
+
+/* Estilos del mapa y modal (sin cambios) */
+#show-graph-btn {
+    position: fixed; top: 20px; right: 20px; z-index: 1000; background-color: #007aff;
+    color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;
+    font-size: 1rem; font-weight: bold; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease-in-out;
+}
+#show-graph-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; }
+.modal-content { background-color: #fff; padding: 2rem; border-radius: 12px; width: 80%; height: 80%;
+    max-width: 1000px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; }
+.close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 2.5rem; color: #aaa; cursor: pointer; line-height: 1; }
+.close-modal-btn:hover { color: #333; }
+#graph-container { width: 100%; height: 100%; border: 1px solid #eee; margin-top: 1rem; flex-grow: 1; }
 
 /* Estilos de paneles y contenido */
 .panel:last-child { border-right: none; }
@@ -133,11 +104,7 @@ body, html {
 .panel-footer { padding-bottom: 1.5rem; flex-shrink: 0; border-top: 1px solid #eee; transition: background-color 0.4s ease; }
 .breadcrumb { margin: 0; padding-top: 1rem; font-size: 0.8rem; color: #666; word-wrap: break-word; }
 .panel h1, .panel h2 { color: #1a1a1a; border-bottom: 2px solid #007aff; padding-bottom: 0.5rem; margin-top: 0; }
-.panel p {
-    font-size: 16px;
-    line-height: 25px;
-    margin-bottom: 1rem;
-}
+.panel p { font-size: 16px; line-height: 25px; margin-bottom: 1rem; }
 .panel a { color: #007aff; text-decoration: none; font-weight: bold; border-bottom: 1px dotted #007aff; transition: color 0.2s, border-bottom-color 0.2s; }
 .panel a:hover, .panel a:focus { color: #0056b3; border-bottom: 1px solid #0056b3; }
 .panel ul { list-style: none; padding-left: 0; }
@@ -145,36 +112,11 @@ body, html {
 
 /* Media Query para Responsividad */
 @media (max-width: 768px) {
-    .panel {
-        width: 90vw; /* Los paneles ocupan casi toda la pantalla */
-        min-width: 90vw;
-    }
-
-    .panel header, .panel-content, .panel-footer {
-        padding: 0 1.5rem; /* Menos padding en los lados */
-    }
-
-    .panel h1, .panel h2 {
-        font-size: 1.5rem;
-    }
-
-    .panel p {
-        /* Se mantiene la consistencia en móviles */
-        font-size: 16px;
-        line-height: 25px;
-    }
-
-    #show-graph-btn {
-        top: 10px;
-        right: 10px;
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
-
-    .modal-content {
-        width: 95%; /* Modal casi a pantalla completa */
-        height: 90%;
-        padding: 1.5rem;
-    }
+    .panel { width: 90vw; min-width: 90vw; }
+    .panel header, .panel-content, .panel-footer { padding: 0 1.5rem; }
+    .panel h1, .panel h2 { font-size: 1.5rem; }
+    .panel p { font-size: 16px; line-height: 25px; }
+    #show-graph-btn { top: 10px; right: 10px; padding: 8px 12px; font-size: 0.9rem; }
+    .modal-content { width: 95%; height: 90%; padding: 1.5rem; }
 }
 
