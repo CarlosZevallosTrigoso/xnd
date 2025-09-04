@@ -143,15 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="breadcrumb">${breadcrumbHTML}</p>
                 </footer>`;
 
-            let panelToClose = parentPanel.nextElementSibling;
-            while (panelToClose) {
-                const next = panelToClose.nextElementSibling;
-                updateNodeStatus(panelToClose.dataset.id, false);
-                panelToClose.remove();
-                panelToClose = next;
-            }
-
+            // --- LÓGICA CORREGIDA ---
+            // Simplemente inserta el nuevo panel después del panel padre,
+            // sin cerrar los paneles siguientes.
             parentPanel.after(newPanel);
+            
             newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
 
         } catch (error) {
