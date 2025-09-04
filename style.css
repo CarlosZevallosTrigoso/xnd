@@ -1,114 +1,138 @@
-/**
- * Calcula un par de colores (para el panel y su pie de página) basado en la profundidad de navegación.
- * @param {number} depth - El nivel de profundidad del panel (0 para el panel raíz).
- * @returns {{panelColor: string, footerColor: string}}
- */
-function getColorForDepth(depth) {
-    const baseHue = 210; // Un azul base
-    const hueIncrement = 25; // Cuánto cambia el color en cada nivel
-    const saturation = 30;
-    const panelLightness = 97; // Un color de fondo muy claro, casi blanco
-    const footerLightness = 92; // Un tono ligeramente más oscuro para el pie de página
-
-    // Calcula el nuevo tono, asegurándose de que se mantenga en el rango de 0-360
-    const hue = (baseHue + (depth * hueIncrement)) % 360;
-
-    return {
-        panelColor: `hsl(${hue}, ${saturation}%, ${panelLightness}%)`,
-        footerColor: `hsl(${hue}, ${saturation}%, ${footerLightness}%)`
-    };
+/* Estilos generales y reseteo básico */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const mainContainer = document.getElementById('main-container');
+/* Contenedor principal */
+#main-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100vh;
+    width: fit-content;
+}
 
-    // Colorear el panel inicial al cargar la página
-    const initialPanel = mainContainer.querySelector('.panel');
-    if (initialPanel) {
-        const initialPath = JSON.parse(initialPanel.dataset.path || '[]');
-        const initialDepth = initialPath.length - 1;
-        const colors = getColorForDepth(initialDepth);
+/* Estilo para cada panel de contenido */
+.panel {
+    width: 550px;
+    min-width: 550px;
+    height: 100vh;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    border-right: 1px solid #dcdcdc;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.4s ease; /* Transición suave para el color */
+}
 
-        initialPanel.style.backgroundColor = colors.panelColor;
-        const initialFooter = initialPanel.querySelector('.panel-footer');
-        if (initialFooter) {
-            initialFooter.style.backgroundColor = colors.footerColor;
-        }
-    }
+.panel:last-child {
+    border-right: none;
+}
 
-    // Listener de eventos principal
-    mainContainer.addEventListener('click', async (event) => {
-        const clickedElement = event.target;
+/* Estilos de botones actualizados */
+.panel-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
 
-        if (clickedElement.tagName === 'A' && clickedElement.href) {
-            event.preventDefault();
-            handleLinkClick(clickedElement);
-        }
+.close-btn, .close-all-btn {
+    background-color: #e9e9eb;
+    color: #555;
+    border: none;
+    border-radius: 6px;
+    height: 28px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: monospace;
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+}
 
-        if (clickedElement.matches('.close-btn')) {
-            const panelToRemove = clickedElement.closest('.panel');
-            if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
-                panelToRemove.remove();
-            }
-        }
+.close-btn:hover, .close-all-btn:hover {
+    background-color: #ff4d4d;
+    color: white;
+}
 
-        if (clickedElement.matches('.close-all-btn')) {
-            let currentPanel = clickedElement.closest('.panel');
-            while (currentPanel) {
-                const nextPanel = currentPanel.nextElementSibling;
-                if (currentPanel !== mainContainer.firstElementChild) {
-                    currentPanel.remove();
-                }
-                currentPanel = nextPanel;
-            }
-        }
-    });
+/* Estructura interna del panel */
+.panel header, .panel-content, .panel-footer {
+    padding: 0 3rem;
+}
 
-    async function handleLinkClick(linkElement) {
-        const url = linkElement.href;
-        const parentPanel = linkElement.closest('.panel');
-        const parentPath = JSON.parse(parentPanel.dataset.path || '[]');
-        const newPageName = linkElement.textContent;
-        const newPath = [...parentPath, newPageName];
-        const depth = newPath.length - 1;
-        const colors = getColorForDepth(depth);
+.panel header {
+    padding-top: 2rem;
+}
 
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Error al cargar: ${response.statusText}`);
-            
-            const contentHTML = await response.text();
-            const breadcrumbHTML = newPath.join(' &raquo; ');
-            const newPanel = document.createElement('article');
+.panel-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
 
-            newPanel.classList.add('panel');
-            newPanel.dataset.path = JSON.stringify(newPath);
-            newPanel.style.backgroundColor = colors.panelColor;
-            
-            newPanel.innerHTML = `
-                <div class="panel-controls">
-                    <button class="close-btn" title="Cerrar este panel">x</button>
-                    <button class="close-all-btn" title="Cerrar este y los siguientes">[x todo]</button>
-                </div>
-                <section class="panel-content">
-                    ${contentHTML}
-                </section>
-                <footer class="panel-footer" style="background-color: ${colors.footerColor};">
-                    <p class="breadcrumb">${breadcrumbHTML}</p>
-                </footer>
-            `;
+.panel-footer {
+    padding-bottom: 1.5rem;
+    flex-shrink: 0;
+    border-top: 1px solid #eee;
+    transition: background-color 0.4s ease; /* Transición suave para el color */
+}
 
-            if (!parentPanel.nextElementSibling) {
-                mainContainer.appendChild(newPanel);
-            } else {
-                parentPanel.after(newPanel);
-            }
+.breadcrumb {
+    margin: 0;
+    padding-top: 1rem;
+    font-size: 0.8rem;
+    color: #666;
+    word-wrap: break-word;
+}
 
-            newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+/* Tipografía y enlaces (sin cambios) */
+.panel h1, .panel h2 {
+    color: #1a1a1a;
+    border-bottom: 2px solid #007aff;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
 
-        } catch (error) {
-            console.error('No se pudo cargar el panel:', error);
-        }
-    }
-});
+.panel p {
+    line-height: 1.7;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+.panel a {
+    color: #007aff;
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px dotted #007aff;
+    transition: color 0.2s, border-bottom-color 0.2s;
+}
+
+.panel a:hover, .panel a:focus {
+    color: #0056b3;
+    border-bottom: 1px solid #0056b3;
+}
+
+.panel ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.panel li {
+    margin-bottom: 0.5rem;
+}
 
