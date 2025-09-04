@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContainer = document.getElementById('main-container');
     const initialPanel = mainContainer.querySelector('.panel');
 
-    // Inicialización del Grafo y Modal
     initializeFullGraph();
     if (initialPanel) {
         updateNodeStatus(initialPanel.dataset.id, true);
@@ -72,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     closeGraphBtn.addEventListener('click', () => { modal.style.display = 'none'; });
     modal.addEventListener('click', (event) => { if (event.target === modal) modal.style.display = 'none'; });
 
-    // Inicialización del Panel
     if (initialPanel) {
         const initialPath = JSON.parse(initialPanel.dataset.path || '[]');
         const colors = getColorForDepth(initialPath.length - 1);
@@ -80,18 +78,46 @@ document.addEventListener('DOMContentLoaded', () => {
         initialPanel.querySelector('.panel-footer').style.backgroundColor = colors.footerColor;
     }
 
-    // Listener de Eventos Principal
     mainContainer.addEventListener('click', async (event) => {
         const clickedElement = event.target;
 
         if (clickedElement.tagName === 'A' && clickedElement.href) {
             event.preventDefault();
-            await handleLinkClick(clickedElement);
+            const parentPanel = clickedElement.closest('.panel');
+            
+            if (clickedElement.classList.contains('active-link')) {
+                const panelToClose = parentPanel.nextElementSibling;
+                if (panelToClose && panelToClose.dataset.id === clickedElement.textContent) {
+                    updateNodeStatus(panelToClose.dataset.id, false);
+                    panelToClose.remove();
+                    clickedElement.classList.remove('active-link');
+                }
+                return;
+            }
+
+            const currentActiveLink = parentPanel.querySelector('a.active-link');
+            if (currentActiveLink) {
+                const panelToClose = parentPanel.nextElementSibling;
+                if (panelToClose && panelToClose.dataset.id === currentActiveLink.textContent) {
+                    updateNodeStatus(panelToClose.dataset.id, false);
+                    panelToClose.remove();
+                    currentActiveLink.classList.remove('active-link');
+                }
+            }
+            
+            await openNewPanel(clickedElement);
         }
 
         if (clickedElement.matches('.close-btn')) {
             const panelToRemove = clickedElement.closest('.panel');
             if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
+                const openerPanel = panelToRemove.previousElementSibling;
+                if (openerPanel) {
+                    const linkToDeactivate = Array.from(openerPanel.querySelectorAll('a.active-link')).find(a => a.textContent === panelToRemove.dataset.id);
+                    if (linkToDeactivate) {
+                        linkToDeactivate.classList.remove('active-link');
+                    }
+                }
                 updateNodeStatus(panelToRemove.dataset.id, false);
                 panelToRemove.remove();
             }
@@ -101,6 +127,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let currentPanel = clickedElement.closest('.panel');
             while (currentPanel && currentPanel !== mainContainer.firstElementChild) {
                 const nextPanel = currentPanel.nextElementSibling;
+                const openerPanel = currentPanel.previousElementSibling;
+                if (openerPanel) {
+                    const linkToDeactivate = Array.from(openerPanel.querySelectorAll('a.active-link')).find(a => a.textContent === currentPanel.dataset.id);
+                    if (linkToDeactivate) {
+                        linkToDeactivate.classList.remove('active-link');
+                    }
+                }
                 updateNodeStatus(currentPanel.dataset.id, false);
                 currentPanel.remove();
                 currentPanel = nextPanel;
@@ -108,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function handleLinkClick(linkElement) {
+    async function openNewPanel(linkElement) {
         const url = linkElement.href;
         const parentPanel = linkElement.closest('.panel');
         const parentPath = JSON.parse(parentPanel.dataset.path || '[]');
@@ -116,6 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const newId = newPageName;
         
         updateNodeStatus(newId, true);
+        linkElement.classList.add('active-link');
 
         try {
             const response = await fetch(url);
@@ -142,16 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <footer class="panel-footer" style="background-color: ${colors.footerColor};">
                     <p class="breadcrumb">${breadcrumbHTML}</p>
                 </footer>`;
-
-            // --- LÓGICA CORREGIDA ---
-            // Simplemente inserta el nuevo panel después del panel padre,
-            // sin cerrar los paneles siguientes.
-            parentPanel.after(newPanel);
             
+            parentPanel.after(newPanel);
             newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
 
         } catch (error) {
             updateNodeStatus(newId, false);
+            linkElement.classList.remove('active-link');
             console.error('No se pudo cargar el panel:', error);
         }
     }
