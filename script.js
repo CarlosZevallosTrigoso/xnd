@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await handleLinkClick(clickedElement);
         }
 
-        // --- CAMBIO AQUÍ: Lógica de cierre para el botón 'x' ---
+        // Lógica de cierre para el botón 'x'
         if (clickedElement.matches('.close-btn')) {
             const panelToRemove = clickedElement.closest('.panel');
             if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- CAMBIO AQUÍ: Lógica de cierre para el botón '[x todo]' ---
+        // Lógica de cierre para el botón '[x todo]'
         if (clickedElement.matches('.close-all-btn')) {
             let currentPanel = clickedElement.closest('.panel');
             while (currentPanel) {
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Función handleLinkClick (sin cambios)
+    // Función handleLinkClick
     async function handleLinkClick(linkElement) {
         const url = linkElement.href;
         const parentPanel = linkElement.closest('.panel');
@@ -173,7 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const breadcrumbHTML = newPath.join(' &raquo; ');
             const newPanel = document.createElement('article');
 
-            newPanel.classList.add('panel');
+            // --- CAMBIO AQUÍ: Añadimos la clase para la animación ---
+            newPanel.classList.add('panel', 'panel-animated');
             newPanel.dataset.path = JSON.stringify(newPath);
             newPanel.dataset.id = newId;
             newPanel.style.backgroundColor = colors.panelColor;
