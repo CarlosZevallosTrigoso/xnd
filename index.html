@@ -17,13 +17,13 @@
     <button id="show-graph-btn">Ver Mapa</button>
 
     <main id="main-container">
-        <!-- El panel inicial con contenido extendido -->
+        <!-- El panel inicial -->
         <article class="panel" data-path='["Punto de Partida"]' data-id="Punto de Partida">
             <header>
                 <h1>Punto de Partida</h1>
             </header>
             <section class="panel-content">
-                <p>
+                 <p>
                     Bienvenido a este espacio de exploración conceptual. Lo que tienes ante ti no es una página web convencional, sino un experimento sobre la naturaleza de la lectura y la conexión de ideas. Cada enlace que encuentres no te expulsará a una nueva pestaña ni reemplazará tu vista actual; en su lugar, desplegará un nuevo panel a tu derecha, creando una secuencia visual y continua de pensamiento. Esta interfaz está diseñada para que el contexto nunca se pierda, permitiendo que cada nueva idea se ramifique desde su origen sin abandonar el rastro.
                 </p>
                 <p>
@@ -46,7 +46,7 @@
         </article>
     </main>
 
-    <!-- Estructura de la ventana modal para el grafo (inicialmente oculta) -->
+    <!-- Estructura de la ventana modal para el grafo -->
     <div id="graph-modal" class="modal-overlay">
         <div class="modal-content">
             <span id="close-graph-btn" class="close-modal-btn">&times;</span>
@@ -54,6 +54,9 @@
             <div id="graph-container"></div>
         </div>
     </div>
+    
+    <!-- NUEVO: Contenedor para la Cinta Cronológica -->
+    <div id="timeline-container"></div>
 
     <script src="script.js"></script>
 
