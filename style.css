@@ -31,11 +31,11 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-/* Estilos para el botón del mapa y la ventana modal */
+/* --- CAMBIOS AQUÍ --- */
 #show-graph-btn {
     position: fixed;
     top: 20px;
-    left: 20px;
+    right: 20px; /* Movido a la derecha */
     z-index: 1000;
     background-color: #007aff;
     color: white;
@@ -54,8 +54,9 @@ body, html {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilos de la ventana modal (sin cambios) */
 .modal-overlay {
-    display: none; /* Oculto por defecto */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -102,7 +103,7 @@ body, html {
     flex-grow: 1;
 }
 
-/* Estilos de paneles y contenido */
+/* Estilos de paneles y contenido (sin cambios) */
 .panel:last-child { border-right: none; }
 .panel-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10; }
 .close-btn, .close-all-btn { background-color: #e9e9eb; color: #555; border: none; border-radius: 6px; height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; font-family: monospace; font-weight: bold; transition: background-color 0.2s, color 0.2s; }
