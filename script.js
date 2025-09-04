@@ -25,7 +25,6 @@ function drawGraph() {
     const container = document.getElementById('graph-container');
     const data = { nodes: graphNodes, edges: graphEdges };
     
-    // --- CAMBIOS AQUÍ: Opciones para un grafo fluido con físicas ---
     const options = {
         physics: {
             enabled: true,
@@ -53,7 +52,6 @@ function drawGraph() {
 
     network = new vis.Network(container, data, options);
 
-    // --- CAMBIO AQUÍ: Centrar el grafo después de la estabilización ---
     network.on("stabilizationIterationsDone", function () {
         network.fit();
     });
@@ -114,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (initialFooter) initialFooter.style.backgroundColor = colors.footerColor;
     }
 
-    // Listener de eventos principal (sin cambios)
+    // Listener de eventos principal
     mainContainer.addEventListener('click', async (event) => {
         const clickedElement = event.target;
 
@@ -123,16 +121,30 @@ document.addEventListener('DOMContentLoaded', () => {
             await handleLinkClick(clickedElement);
         }
 
+        // --- CAMBIO AQUÍ: Lógica de cierre para el botón 'x' ---
         if (clickedElement.matches('.close-btn')) {
             const panelToRemove = clickedElement.closest('.panel');
-            if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) panelToRemove.remove();
+            if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
+                const nodeIdToRemove = panelToRemove.dataset.id;
+                if (nodeIdToRemove) {
+                    graphNodes.remove(nodeIdToRemove); // Elimina el nodo del grafo
+                }
+                panelToRemove.remove();
+            }
         }
 
+        // --- CAMBIO AQUÍ: Lógica de cierre para el botón '[x todo]' ---
         if (clickedElement.matches('.close-all-btn')) {
             let currentPanel = clickedElement.closest('.panel');
             while (currentPanel) {
                 const nextPanel = currentPanel.nextElementSibling;
-                if (currentPanel !== mainContainer.firstElementChild) currentPanel.remove();
+                if (currentPanel !== mainContainer.firstElementChild) {
+                    const nodeIdToRemove = currentPanel.dataset.id;
+                    if (nodeIdToRemove) {
+                        graphNodes.remove(nodeIdToRemove); // Elimina el nodo del grafo
+                    }
+                    currentPanel.remove();
+                }
                 currentPanel = nextPanel;
             }
         }
