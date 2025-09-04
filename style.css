@@ -3,7 +3,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    /* CAMBIO: Se ha cambiado la fuente a Open Sans */
+    /* CORRECCIÓN: Aseguramos que la fuente sea Open Sans */
     font-family: 'Open Sans', sans-serif;
     background-color: #f0f2f5;
     color: #333;
@@ -129,7 +129,7 @@ body, html {
 .breadcrumb { margin: 0; padding-top: 1rem; font-size: 0.8rem; color: #666; word-wrap: break-word; }
 .panel h1, .panel h2 { color: #1a1a1a; border-bottom: 2px solid #007aff; padding-bottom: 0.5rem; margin-top: 0; }
 .panel p {
-    /* CAMBIO: Se ajusta la tipografía a las nuevas especificaciones */
+    /* CORRECCIÓN: Se ajusta la tipografía a 16px / 25px */
     font-size: 16px;
     line-height: 25px;
     margin-bottom: 1rem;
