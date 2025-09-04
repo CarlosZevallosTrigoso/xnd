@@ -1,4 +1,4 @@
-/* Estilos generales (sin cambios) */
+/* Estilos generales */
 body, html {
     margin: 0;
     padding: 0;
@@ -31,8 +31,7 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-/* --- NUEVO: Estilos para el botón del mapa y la ventana modal --- */
-
+/* Estilos para el botón del mapa y la ventana modal */
 #show-graph-btn {
     position: fixed;
     top: 20px;
@@ -103,7 +102,7 @@ body, html {
     flex-grow: 1;
 }
 
-/* Estilos de paneles y contenido (sin cambios) */
+/* Estilos de paneles y contenido */
 .panel:last-child { border-right: none; }
 .panel-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10; }
 .close-btn, .close-all-btn { background-color: #e9e9eb; color: #555; border: none; border-radius: 6px; height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; font-family: monospace; font-weight: bold; transition: background-color 0.2s, color 0.2s; }
