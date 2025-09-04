@@ -1,22 +1,52 @@
-// --- Lógica del Grafo de Navegación (sin cambios) ---
+// --- Lógica del Grafo de Navegación ---
 const graphNodes = new vis.DataSet();
 const graphEdges = new vis.DataSet();
 let network = null;
-function addNode(id) { if (!graphNodes.get(id)) { graphNodes.add({ id: id, label: id }); } }
-function addEdge(from, to) { const edgeId = `${from}->${to}`; if (!graphEdges.get(edgeId)) { graphEdges.add({ id: edgeId, from: from, to: to, arrows: 'to' }); } }
+
+const colorOpen = { border: '#ff4d4d', background: '#ffe5e5' };
+const colorClosed = { border: '#666', background: '#e0e0e0' };
+
+const siteStructure = {
+    nodes: [
+        { id: "Punto de Partida" }, { id: "Proyecto Xanadu" }, { id: "¿Qué es el hipertexto?" },
+        { id: "Sobre el diseño minimalista" }, { id: "Vannevar Bush" }, { id: "Ted Nelson" }
+    ],
+    edges: [
+        { from: "Punto de Partida", to: "Proyecto Xanadu" }, { from: "Punto de Partida", to: "¿Qué es el hipertexto?" },
+        { from: "Punto de Partida", to: "Sobre el diseño minimalista" }, { from: "¿Qué es el hipertexto?", to: "Vannevar Bush" },
+        { from: "¿Qué es el hipertexto?", to: "Proyecto Xanadu" }, { from: "Proyecto Xanadu", to: "Ted Nelson" },
+        { from: "Vannevar Bush", to: "¿Qué es el hipertexto?" }, { from: "Ted Nelson", to: "Proyecto Xanadu" }
+    ]
+};
+
+function initializeFullGraph() {
+    siteStructure.nodes.forEach(node => {
+        graphNodes.add({ id: node.id, label: node.id, color: colorClosed });
+    });
+    siteStructure.edges.forEach(edge => {
+        graphEdges.add({ id: `${edge.from}->${edge.to}`, from: edge.from, to: edge.to, arrows: 'to' });
+    });
+}
+
+function updateNodeStatus(nodeId, isOpen) {
+    if (graphNodes.get(nodeId)) {
+        graphNodes.update({ id: nodeId, color: isOpen ? colorOpen : colorClosed });
+    }
+}
+
 function drawGraph() {
     const container = document.getElementById('graph-container');
     const data = { nodes: graphNodes, edges: graphEdges };
     const options = {
-        physics: { enabled: true, solver: 'barnesHut', barnesHut: { gravitationalConstant: -10000, centralGravity: 0.1, springLength: 120, }, stabilization: { iterations: 1500, }, },
-        nodes: { shape: 'box', color: '#e0eaff', font: { color: '#333' }, borderWidth: 1, borderColor: '#b3c7ff', },
-        edges: { color: '#848484', },
+        physics: { enabled: true, solver: 'barnesHut', barnesHut: { gravitationalConstant: -10000, centralGravity: 0.1, springLength: 150 }, stabilization: { iterations: 1500 } },
+        nodes: { shape: 'box', font: { color: '#333' }, borderWidth: 2 },
+        edges: { color: '#848484' }
     };
     network = new vis.Network(container, data, options);
     network.on("stabilizationIterationsDone", () => network.fit());
 }
 
-// --- Lógica de Colores (sin cambios) ---
+// --- Lógica de Colores ---
 function getColorForDepth(depth) {
     const baseHue = 210, hueIncrement = 25, saturation = 60, panelLightness = 97, footerLightness = 92;
     const hue = (baseHue + (depth * hueIncrement)) % 360;
@@ -26,23 +56,15 @@ function getColorForDepth(depth) {
     };
 }
 
-// --- NUEVO: Lógica de la Cinta Cronológica ---
-function createTimelineBlock(targetId, color, title) {
-    const block = document.createElement('div');
-    block.className = 'timeline-block';
-    block.style.backgroundColor = color;
-    block.dataset.targetId = targetId;
-    block.title = title; // Tooltip con el nombre del panel
-    return block;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const mainContainer = document.getElementById('main-container');
-    const timelineContainer = document.getElementById('timeline-container');
     const initialPanel = mainContainer.querySelector('.panel');
 
-    // --- Lógica del Grafo y Modal (sin cambios) ---
-    if (initialPanel) { addNode(initialPanel.dataset.id); }
+    // Inicialización del Grafo y Modal
+    initializeFullGraph();
+    if (initialPanel) {
+        updateNodeStatus(initialPanel.dataset.id, true);
+    }
     const modal = document.getElementById('graph-modal');
     const showGraphBtn = document.getElementById('show-graph-btn');
     const closeGraphBtn = document.getElementById('close-graph-btn');
@@ -50,32 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
     closeGraphBtn.addEventListener('click', () => { modal.style.display = 'none'; });
     modal.addEventListener('click', (event) => { if (event.target === modal) modal.style.display = 'none'; });
 
-    // --- Inicialización del Panel y Cinta ---
+    // Inicialización del Panel
     if (initialPanel) {
         const initialPath = JSON.parse(initialPanel.dataset.path || '[]');
-        const initialDepth = initialPath.length - 1;
-        const colors = getColorForDepth(initialDepth);
+        const colors = getColorForDepth(initialPath.length - 1);
         initialPanel.style.backgroundColor = colors.panelColor;
         initialPanel.querySelector('.panel-footer').style.backgroundColor = colors.footerColor;
-
-        // Crear el primer bloque en la cinta
-        const initialBlock = createTimelineBlock(initialPanel.dataset.id, colors.panelColor, initialPanel.dataset.id);
-        timelineContainer.appendChild(initialBlock);
     }
-    
-    // --- NUEVO: Listener para la Cinta Cronológica ---
-    timelineContainer.addEventListener('click', (event) => {
-        const block = event.target.closest('.timeline-block');
-        if (block) {
-            const targetId = block.dataset.targetId;
-            const targetPanel = mainContainer.querySelector(`[data-id="${targetId}"]`);
-            if (targetPanel) {
-                targetPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-            }
-        }
-    });
 
-    // --- Listener de Eventos Principal (Modificado para sincronizar la cinta) ---
+    // Listener de Eventos Principal
     mainContainer.addEventListener('click', async (event) => {
         const clickedElement = event.target;
 
@@ -87,13 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (clickedElement.matches('.close-btn')) {
             const panelToRemove = clickedElement.closest('.panel');
             if (panelToRemove && panelToRemove !== mainContainer.firstElementChild) {
-                const nodeIdToRemove = panelToRemove.dataset.id;
-                // Sincronizar grafo y cinta
-                if (nodeIdToRemove) {
-                    graphNodes.remove(nodeIdToRemove);
-                    const blockToRemove = timelineContainer.querySelector(`[data-target-id="${nodeIdToRemove}"]`);
-                    if (blockToRemove) blockToRemove.remove();
-                }
+                updateNodeStatus(panelToRemove.dataset.id, false);
                 panelToRemove.remove();
             }
         }
@@ -102,39 +101,30 @@ document.addEventListener('DOMContentLoaded', () => {
             let currentPanel = clickedElement.closest('.panel');
             while (currentPanel && currentPanel !== mainContainer.firstElementChild) {
                 const nextPanel = currentPanel.nextElementSibling;
-                 const nodeIdToRemove = currentPanel.dataset.id;
-                // Sincronizar grafo y cinta
-                if (nodeIdToRemove) {
-                    graphNodes.remove(nodeIdToRemove);
-                    const blockToRemove = timelineContainer.querySelector(`[data-target-id="${nodeIdToRemove}"]`);
-                    if (blockToRemove) blockToRemove.remove();
-                }
+                updateNodeStatus(currentPanel.dataset.id, false);
                 currentPanel.remove();
                 currentPanel = nextPanel;
             }
         }
     });
 
-    // --- Función handleLinkClick (Modificada para añadir a la cinta) ---
     async function handleLinkClick(linkElement) {
         const url = linkElement.href;
         const parentPanel = linkElement.closest('.panel');
-        const parentId = parentPanel.dataset.id;
         const parentPath = JSON.parse(parentPanel.dataset.path || '[]');
         const newPageName = linkElement.textContent;
         const newId = newPageName;
-        const newPath = [...parentPath, newPageName];
-        const depth = newPath.length - 1;
-        const colors = getColorForDepth(depth);
-
-        addNode(newId);
-        addEdge(parentId, newId);
+        
+        updateNodeStatus(newId, true);
 
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Error al cargar: ${response.statusText}`);
             
             const contentHTML = await response.text();
+            const newPath = [...parentPath, newPageName];
+            const depth = newPath.length - 1;
+            const colors = getColorForDepth(depth);
             const breadcrumbHTML = newPath.join(' &raquo; ');
             const newPanel = document.createElement('article');
 
@@ -153,41 +143,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="breadcrumb">${breadcrumbHTML}</p>
                 </footer>`;
 
-            // Lógica para insertar panel
-            let existingPanel = mainContainer.querySelector(`[data-id="${newId}"]`);
-            while (existingPanel) {
-                const next = existingPanel.nextElementSibling;
-                const blockToRemove = timelineContainer.querySelector(`[data-target-id="${existingPanel.dataset.id}"]`);
-                if(blockToRemove) blockToRemove.remove();
-                graphNodes.remove(existingPanel.dataset.id);
-                existingPanel.remove();
-                existingPanel = next;
-            }
-            
-            let nextSibling = parentPanel.nextElementSibling;
-            while(nextSibling) {
-                const next = nextSibling.nextElementSibling;
-                const blockToRemove = timelineContainer.querySelector(`[data-target-id="${nextSibling.dataset.id}"]`);
-                if(blockToRemove) blockToRemove.remove();
-                graphNodes.remove(nextSibling.dataset.id);
-                nextSibling.remove();
-                nextSibling = next;
+            let panelToClose = parentPanel.nextElementSibling;
+            while (panelToClose) {
+                const next = panelToClose.nextElementSibling;
+                updateNodeStatus(panelToClose.dataset.id, false);
+                panelToClose.remove();
+                panelToClose = next;
             }
 
             parentPanel.after(newPanel);
-            
-            // Añadir bloque a la cinta cronológica
-            const newBlock = createTimelineBlock(newId, colors.panelColor, newId);
-            const parentBlock = timelineContainer.querySelector(`[data-target-id="${parentId}"]`);
-            if (parentBlock) {
-                 parentBlock.after(newBlock);
-            } else {
-                 timelineContainer.appendChild(newBlock);
-            }
-
             newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
 
         } catch (error) {
+            updateNodeStatus(newId, false);
             console.error('No se pudo cargar el panel:', error);
         }
     }
