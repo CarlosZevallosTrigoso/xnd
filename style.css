@@ -3,7 +3,6 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    /* CAMBIO: Se ha cambiado la fuente Inter por Lora */
     font-family: 'Lora', serif;
     background-color: #f0f2f5;
     color: #333;
@@ -128,7 +127,12 @@ body, html {
 .panel-footer { padding-bottom: 1.5rem; flex-shrink: 0; border-top: 1px solid #eee; transition: background-color 0.4s ease; }
 .breadcrumb { margin: 0; padding-top: 1rem; font-size: 0.8rem; color: #666; word-wrap: break-word; }
 .panel h1, .panel h2 { color: #1a1a1a; border-bottom: 2px solid #007aff; padding-bottom: 0.5rem; margin-top: 0; }
-.panel p { line-height: 1.7; font-size: 1.05rem; margin-bottom: 1rem; }
+.panel p {
+    /* CAMBIO: Se ajusta el tamaño de fuente y el interlineado */
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 1rem;
+}
 .panel a { color: #007aff; text-decoration: none; font-weight: bold; border-bottom: 1px dotted #007aff; transition: color 0.2s, border-bottom-color 0.2s; }
 .panel a:hover, .panel a:focus { color: #0056b3; border-bottom: 1px solid #0056b3; }
 .panel ul { list-style: none; padding-left: 0; }
@@ -150,7 +154,9 @@ body, html {
     }
 
     .panel p {
-        font-size: 1rem;
+        /* Se mantiene la consistencia en móviles */
+        font-size: 14px;
+        line-height: 20px;
     }
 
     #show-graph-btn {
