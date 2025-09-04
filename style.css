@@ -31,11 +31,27 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-/* --- CAMBIOS AQUÍ --- */
+/* --- NUEVO: Animación para la entrada de paneles --- */
+.panel-animated {
+    animation: slideInFromRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Estilos para el botón del mapa y la ventana modal */
 #show-graph-btn {
     position: fixed;
     top: 20px;
-    right: 20px; /* Movido a la derecha */
+    right: 20px;
     z-index: 1000;
     background-color: #007aff;
     color: white;
@@ -54,7 +70,6 @@ body, html {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilos de la ventana modal (sin cambios) */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -91,9 +106,7 @@ body, html {
     line-height: 1;
 }
 
-.close-modal-btn:hover {
-    color: #333;
-}
+.close-modal-btn:hover { color: #333; }
 
 #graph-container {
     width: 100%;
@@ -103,7 +116,7 @@ body, html {
     flex-grow: 1;
 }
 
-/* Estilos de paneles y contenido (sin cambios) */
+/* Estilos de paneles y contenido */
 .panel:last-child { border-right: none; }
 .panel-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10; }
 .close-btn, .close-all-btn { background-color: #e9e9eb; color: #555; border: none; border-radius: 6px; height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; font-family: monospace; font-weight: bold; transition: background-color 0.2s, color 0.2s; }
@@ -119,4 +132,37 @@ body, html {
 .panel a:hover, .panel a:focus { color: #0056b3; border-bottom: 1px solid #0056b3; }
 .panel ul { list-style: none; padding-left: 0; }
 .panel li { margin-bottom: 0.5rem; }
+
+/* --- NUEVO: Media Query para Responsividad --- */
+@media (max-width: 768px) {
+    .panel {
+        width: 90vw; /* Los paneles ocupan casi toda la pantalla */
+        min-width: 90vw;
+    }
+
+    .panel header, .panel-content, .panel-footer {
+        padding: 0 1.5rem; /* Menos padding en los lados */
+    }
+
+    .panel h1, .panel h2 {
+        font-size: 1.5rem;
+    }
+
+    .panel p {
+        font-size: 1rem;
+    }
+
+    #show-graph-btn {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        width: 95%; /* Modal casi a pantalla completa */
+        height: 90%;
+        padding: 1.5rem;
+    }
+}
 
