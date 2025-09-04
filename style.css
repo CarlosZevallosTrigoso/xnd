@@ -14,17 +14,14 @@ body, html {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    height: 100%; /* Se ajusta para que el scroll siga funcionando */
+    height: 100vh;
     width: fit-content;
-    padding-bottom: 40px; /* Espacio para la cinta cronológica */
-    box-sizing: border-box;
 }
 
 .panel {
     width: 550px;
     min-width: 550px;
-    /* CAMBIO: La altura se ajusta para dejar espacio a la cinta */
-    height: calc(100vh - 40px); 
+    height: 100vh; 
     flex-shrink: 0;
     box-sizing: border-box;
     border-right: 1px solid #dcdcdc;
@@ -44,40 +41,7 @@ body, html {
     to { opacity: 1; clip-path: inset(0 0 0 0); }
 }
 
-/* --- NUEVO: Estilos para la Cinta Cronológica --- */
-#timeline-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    background-color: #ffffff;
-    border-top: 1px solid #dcdcdc;
-    display: flex;
-    z-index: 1500;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    padding: 4px;
-    box-sizing: border-box;
-    gap: 4px;
-}
-
-.timeline-block {
-    flex: 1 1 0px;
-    height: 100%;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-    position: relative;
-}
-
-.timeline-block:hover {
-    transform: scaleY(1.1);
-    box-shadow: 0 0 8px rgba(0,0,0,0.2);
-}
-/* --- Fin de nuevos estilos --- */
-
-
-/* Estilos del mapa y modal (sin cambios) */
+/* Estilos del mapa y modal */
 #show-graph-btn {
     position: fixed; top: 20px; right: 20px; z-index: 1000; background-color: #007aff;
     color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;
