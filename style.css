@@ -1,4 +1,4 @@
-/* Estilos generales y reseteo básico */
+/* Estilos generales (sin cambios) */
 body, html {
     margin: 0;
     padding: 0;
@@ -6,27 +6,23 @@ body, html {
     font-family: 'Inter', sans-serif;
     background-color: #f0f2f5;
     color: #333;
-    /* Estas dos líneas son cruciales para forzar el scroll horizontal */
     overflow-x: auto;
     overflow-y: hidden;
 }
 
-/* Contenedor principal */
 #main-container {
-    /* Esta es la propiedad más importante. Le dice al contenedor que ordene a sus hijos en una fila. */
     display: flex;
     flex-direction: row;
     align-items: stretch;
     height: 100vh;
-    width: fit-content; /* Permite que el contenedor crezca para alojar todos los paneles */
+    width: fit-content;
 }
 
-/* Estilo para cada panel de contenido */
 .panel {
     width: 550px;
     min-width: 550px;
     height: 100vh;
-    flex-shrink: 0; /* Evita que los paneles se encojan */
+    flex-shrink: 0;
     box-sizing: border-box;
     border-right: 1px solid #dcdcdc;
     position: relative;
@@ -35,106 +31,92 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-.panel:last-child {
-    border-right: none;
-}
+/* --- NUEVO: Estilos para el botón del mapa y la ventana modal --- */
 
-/* Estilos de botones */
-.panel-controls {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    z-index: 10;
-}
-
-.close-btn, .close-all-btn {
-    background-color: #e9e9eb;
-    color: #555;
-    border: none;
-    border-radius: 6px;
-    height: 28px;
-    padding: 0 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-family: monospace;
-    font-weight: bold;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.close-btn:hover, .close-all-btn:hover {
-    background-color: #ff4d4d;
+#show-graph-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background-color: #007aff;
     color: white;
-}
-
-/* Estructura interna del panel */
-.panel header, .panel-content, .panel-footer {
-    padding: 0 3rem;
-}
-
-.panel header {
-    padding-top: 2rem;
-}
-
-.panel-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-}
-
-.panel-footer {
-    padding-bottom: 1.5rem;
-    flex-shrink: 0;
-    border-top: 1px solid #eee;
-    transition: background-color 0.4s ease;
-}
-
-.breadcrumb {
-    margin: 0;
-    padding-top: 1rem;
-    font-size: 0.8rem;
-    color: #666;
-    word-wrap: break-word;
-}
-
-/* Tipografía y enlaces */
-.panel h1, .panel h2 {
-    color: #1a1a1a;
-    border-bottom: 2px solid #007aff;
-    padding-bottom: 0.5rem;
-    margin-top: 0;
-}
-
-.panel p {
-    line-height: 1.7;
-    font-size: 1.05rem;
-    margin-bottom: 1rem;
-}
-
-.panel a {
-    color: #007aff;
-    text-decoration: none;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
     font-weight: bold;
-    border-bottom: 1px dotted #007aff;
-    transition: color 0.2s, border-bottom-color 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease-in-out;
 }
 
-.panel a:hover, .panel a:focus {
-    color: #0056b3;
-    border-bottom: 1px solid #0056b3;
+#show-graph-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.panel ul {
-    list-style: none;
-    padding-left: 0;
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
 }
 
-.panel li {
-    margin-bottom: 0.5rem;
+.modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 80%;
+    height: 80%;
+    max-width: 1000px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2.5rem;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal-btn:hover {
+    color: #333;
+}
+
+#graph-container {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #eee;
+    margin-top: 1rem;
+    flex-grow: 1;
+}
+
+/* Estilos de paneles y contenido (sin cambios) */
+.panel:last-child { border-right: none; }
+.panel-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10; }
+.close-btn, .close-all-btn { background-color: #e9e9eb; color: #555; border: none; border-radius: 6px; height: 28px; padding: 0 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; font-family: monospace; font-weight: bold; transition: background-color 0.2s, color 0.2s; }
+.close-btn:hover, .close-all-btn:hover { background-color: #ff4d4d; color: white; }
+.panel header, .panel-content, .panel-footer { padding: 0 3rem; }
+.panel header { padding-top: 2rem; }
+.panel-content { flex-grow: 1; overflow-y: auto; padding-top: 1rem; padding-bottom: 1rem; }
+.panel-footer { padding-bottom: 1.5rem; flex-shrink: 0; border-top: 1px solid #eee; transition: background-color 0.4s ease; }
+.breadcrumb { margin: 0; padding-top: 1rem; font-size: 0.8rem; color: #666; word-wrap: break-word; }
+.panel h1, .panel h2 { color: #1a1a1a; border-bottom: 2px solid #007aff; padding-bottom: 0.5rem; margin-top: 0; }
+.panel p { line-height: 1.7; font-size: 1.05rem; margin-bottom: 1rem; }
+.panel a { color: #007aff; text-decoration: none; font-weight: bold; border-bottom: 1px dotted #007aff; transition: color 0.2s, border-bottom-color 0.2s; }
+.panel a:hover, .panel a:focus { color: #0056b3; border-bottom: 1px solid #0056b3; }
+.panel ul { list-style: none; padding-left: 0; }
+.panel li { margin-bottom: 0.5rem; }
 
