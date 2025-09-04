@@ -31,14 +31,20 @@ body, html {
     transition: background-color 0.4s ease;
 }
 
-.panel-animated .panel-content {
-    opacity: 0;
-    animation: revealContent 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+/* --- NUEVA ANIMACIÓN FLUIDA --- */
+.panel-animated {
+    animation: fadeInSlideUp 0.6s ease-out forwards;
 }
 
-@keyframes revealContent {
-    from { opacity: 0; clip-path: inset(0 100% 0 0); }
-    to { opacity: 1; clip-path: inset(0 0 0 0); }
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Estilos del mapa y modal */
@@ -71,6 +77,10 @@ body, html {
 .panel p { font-size: 16px; line-height: 25px; margin-bottom: 1rem; }
 .panel a { color: #007aff; text-decoration: none; font-weight: bold; border-bottom: 1px dotted #007aff; transition: color 0.2s, border-bottom-color 0.2s; }
 .panel a:hover, .panel a:focus { color: #0056b3; border-bottom: 1px solid #0056b3; }
+.panel a.active-link {
+    color: #ff4d4d;
+    border-bottom-color: #ff4d4d;
+}
 .panel ul { list-style: none; padding-left: 0; }
 .panel li { margin-bottom: 0.5rem; }
 
