@@ -1,47 +1,77 @@
 document.addEventListener('DOMContentLoaded', () => {
     const mainContainer = document.getElementById('main-container');
 
-    // Se utiliza la delegación de eventos para manejar todos los clics eficientemente.
-    // Escuchamos clics en el contenedor principal en lugar de en cada enlace individual.
     mainContainer.addEventListener('click', async (event) => {
-        // Verificamos si el elemento clickeado es un enlace (etiqueta <a>).
-        if (event.target.tagName === 'A') {
-            event.preventDefault(); // Prevenimos la acción por defecto del enlace (navegar a otra página).
+        const clickedElement = event.target;
 
-            const url = event.target.href;
+        // --- FUNCIONALIDAD 1: Abrir nuevo panel ---
+        if (clickedElement.tagName === 'A') {
+            event.preventDefault();
+            handleLinkClick(clickedElement);
+        }
 
-            try {
-                // Usamos fetch para obtener el contenido del archivo HTML enlazado.
-                // 'await' pausa la ejecución hasta que la promesa de fetch se resuelva.
-                const response = await fetch(url);
-                if (!response.ok) {
-                    // Si hay un error en la respuesta (ej: 404 No Encontrado), lanzamos un error.
-                    throw new Error(`Error al cargar el recurso: ${response.statusText}`);
-                }
-                const contentHTML = await response.text();
+        // --- FUNCIONALIDAD 2: Cerrar panel individual ---
+        if (clickedElement.matches('.close-btn')) {
+            const panelToRemove = clickedElement.closest('.panel');
+            if (panelToRemove) {
+                panelToRemove.remove();
+            }
+        }
 
-                // Creamos un nuevo elemento 'article' para que sea nuestro nuevo panel.
-                const newPanel = document.createElement('article');
-                newPanel.classList.add('panel');
-                newPanel.innerHTML = contentHTML;
-
-                // Añadimos el nuevo panel al final del contenedor principal.
-                mainContainer.appendChild(newPanel);
-
-                // Hacemos scroll horizontal suavemente para que el nuevo panel sea visible.
-                // 'behavior: smooth' crea la animación de desplazamiento.
-                // 'inline: start' alinea el inicio del panel con el inicio del área visible.
-                newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-
-            } catch (error) {
-                console.error('No se pudo cargar el panel:', error);
-                // Opcional: Mostrar un mensaje de error al usuario en un panel.
-                const errorPanel = document.createElement('article');
-                errorPanel.classList.add('panel');
-                errorPanel.innerHTML = `<h2>Error</h2><p>No se pudo cargar el contenido. Por favor, revisa la consola para más detalles.</p>`;
-                mainContainer.appendChild(errorPanel);
-                errorPanel.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+        // --- FUNCIONALIDAD 3: Cerrar panel y los siguientes ---
+        if (clickedElement.matches('.close-all-btn')) {
+            let currentPanel = clickedElement.closest('.panel');
+            while (currentPanel) {
+                const nextPanel = currentPanel.nextElementSibling;
+                currentPanel.remove();
+                currentPanel = nextPanel;
             }
         }
     });
+
+    async function handleLinkClick(linkElement) {
+        const url = linkElement.href;
+        const parentPanel = linkElement.closest('.panel');
+
+        // Obtener la ruta del panel padre y crear la nueva ruta
+        const parentPath = JSON.parse(parentPanel.dataset.path || '[]');
+        const newPageName = linkElement.textContent;
+        const newPath = [...parentPath, newPageName];
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Error al cargar el recurso: ${response.statusText}`);
+            
+            const contentHTML = await response.text();
+            
+            // Crear el breadcrumb en formato HTML
+            const breadcrumbHTML = newPath.join(' &raquo; ');
+
+            // Crear el nuevo panel con la estructura completa
+            const newPanel = document.createElement('article');
+            newPanel.classList.add('panel');
+            newPanel.dataset.path = JSON.stringify(newPath); // Guardar la ruta en el nuevo panel
+            
+            newPanel.innerHTML = `
+                <div class="panel-controls">
+                    <button class="close-btn" title="Cerrar este panel">X</button>
+                    <button class="close-all-btn" title="Cerrar este y los siguientes">&raquo;</button>
+                </div>
+                <section class="panel-content">
+                    ${contentHTML}
+                </section>
+                <footer class="panel-footer">
+                    <p class="breadcrumb">${breadcrumbHTML}</p>
+                </footer>
+            `;
+
+            mainContainer.appendChild(newPanel);
+            newPanel.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+
+        } catch (error) {
+            console.error('No se pudo cargar el panel:', error);
+            // Manejo de error visual (opcional)
+        }
+    }
 });
+
