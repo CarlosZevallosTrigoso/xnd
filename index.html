@@ -7,19 +7,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Enlace a la hoja de estilos CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Contenedor principal que se expandirá horizontalmente -->
     <main id="main-container">
-        <!-- Este es el primer panel, el punto de partida de la navegación -->
-        <article class="panel">
+        <!-- El panel inicial ahora tiene un data-path para el breadcrumb -->
+        <article class="panel" data-path='["Punto de Partida"]'>
             <header>
                 <h1>Punto de Partida</h1>
             </header>
-            <section>
+            <section class="panel-content">
                 <p>Bienvenido a este experimento de navegación hipertextual. Cada enlace que encuentres no te llevará a otra página, sino que abrirá un nuevo panel a tu derecha, creando una línea de pensamiento visual y continua.</p>
                 <p>Esta estructura permite mantener el contexto original mientras exploras nuevas ideas, un concepto inspirado en la visión del <a href="contenido/proyecto-xanadu.html">Proyecto Xanadu</a>.</p>
                 <p>Puedes empezar explorando algunos temas relacionados:</p>
@@ -28,10 +26,12 @@
                     <li><a href="contenido/diseno-minimalista.html">Sobre el diseño minimalista</a></li>
                 </ul>
             </section>
+            <footer class="panel-footer">
+                <p class="breadcrumb">Punto de Partida</p>
+            </footer>
         </article>
     </main>
 
-    <!-- Enlace al script de JavaScript que maneja la interactividad -->
     <script src="script.js"></script>
 
 </body>
