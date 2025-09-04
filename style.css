@@ -3,7 +3,8 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Lora', serif;
+    /* CAMBIO: Se ha cambiado la fuente a Open Sans */
+    font-family: 'Open Sans', sans-serif;
     background-color: #f0f2f5;
     color: #333;
     overflow-x: auto;
@@ -128,9 +129,9 @@ body, html {
 .breadcrumb { margin: 0; padding-top: 1rem; font-size: 0.8rem; color: #666; word-wrap: break-word; }
 .panel h1, .panel h2 { color: #1a1a1a; border-bottom: 2px solid #007aff; padding-bottom: 0.5rem; margin-top: 0; }
 .panel p {
-    /* CAMBIO: Se ajusta el tamaño de fuente y el interlineado */
-    font-size: 14px;
-    line-height: 20px;
+    /* CAMBIO: Se ajusta la tipografía a las nuevas especificaciones */
+    font-size: 16px;
+    line-height: 25px;
     margin-bottom: 1rem;
 }
 .panel a { color: #007aff; text-decoration: none; font-weight: bold; border-bottom: 1px dotted #007aff; transition: color 0.2s, border-bottom-color 0.2s; }
@@ -155,8 +156,8 @@ body, html {
 
     .panel p {
         /* Se mantiene la consistencia en móviles */
-        font-size: 14px;
-        line-height: 20px;
+        font-size: 16px;
+        line-height: 25px;
     }
 
     #show-graph-btn {
