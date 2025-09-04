@@ -6,17 +6,19 @@ body, html {
     font-family: 'Inter', sans-serif;
     background-color: #f0f2f5;
     color: #333;
+    /* Estas dos líneas son cruciales para forzar el scroll horizontal */
     overflow-x: auto;
     overflow-y: hidden;
 }
 
 /* Contenedor principal */
 #main-container {
+    /* Esta es la propiedad más importante. Le dice al contenedor que ordene a sus hijos en una fila. */
     display: flex;
     flex-direction: row;
     align-items: stretch;
     height: 100vh;
-    width: fit-content;
+    width: fit-content; /* Permite que el contenedor crezca para alojar todos los paneles */
 }
 
 /* Estilo para cada panel de contenido */
@@ -24,20 +26,20 @@ body, html {
     width: 550px;
     min-width: 550px;
     height: 100vh;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Evita que los paneles se encojan */
     box-sizing: border-box;
     border-right: 1px solid #dcdcdc;
     position: relative;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.4s ease; /* Transición suave para el color */
+    transition: background-color 0.4s ease;
 }
 
 .panel:last-child {
     border-right: none;
 }
 
-/* Estilos de botones actualizados */
+/* Estilos de botones */
 .panel-controls {
     position: absolute;
     top: 1rem;
@@ -89,7 +91,7 @@ body, html {
     padding-bottom: 1.5rem;
     flex-shrink: 0;
     border-top: 1px solid #eee;
-    transition: background-color 0.4s ease; /* Transición suave para el color */
+    transition: background-color 0.4s ease;
 }
 
 .breadcrumb {
@@ -100,7 +102,7 @@ body, html {
     word-wrap: break-word;
 }
 
-/* Tipografía y enlaces (sin cambios) */
+/* Tipografía y enlaces */
 .panel h1, .panel h2 {
     color: #1a1a1a;
     border-bottom: 2px solid #007aff;
