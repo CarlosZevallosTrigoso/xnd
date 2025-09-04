@@ -28,9 +28,7 @@ body, html {
     box-sizing: border-box;
     background-color: #ffffff;
     border-right: 1px solid #dcdcdc;
-    position: relative; /* Necesario para posicionar los botones de cierre */
-
-    /* Flexbox para la estructura interna (header, content, footer) */
+    position: relative;
     display: flex;
     flex-direction: column;
 }
@@ -39,7 +37,7 @@ body, html {
     border-right: none;
 }
 
-/* --- NUEVO: Controles de cierre --- */
+/* --- NUEVO: Estilos de botones actualizados --- */
 .panel-controls {
     position: absolute;
     top: 1rem;
@@ -53,14 +51,15 @@ body, html {
     background-color: #e9e9eb;
     color: #555;
     border: none;
-    border-radius: 50%;
-    width: 28px;
+    border-radius: 6px; /* Bordes redondeados */
     height: 28px;
+    padding: 0 10px; /* Padding horizontal */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Tamaño de fuente ajustado */
+    font-family: monospace; /* Fuente monoespaciada para un look técnico */
     font-weight: bold;
     transition: background-color 0.2s, color 0.2s;
 }
@@ -70,7 +69,7 @@ body, html {
     color: white;
 }
 
-/* --- NUEVO: Estructura interna del panel --- */
+/* Estructura interna del panel */
 .panel header, .panel-content, .panel-footer {
     padding: 0 3rem;
 }
@@ -80,15 +79,15 @@ body, html {
 }
 
 .panel-content {
-    flex-grow: 1; /* Hace que el contenido ocupe el espacio disponible */
-    overflow-y: auto; /* Scroll si el contenido es muy largo */
+    flex-grow: 1;
+    overflow-y: auto;
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
 
 .panel-footer {
     padding-bottom: 1.5rem;
-    flex-shrink: 0; /* Evita que el footer se encoja */
+    flex-shrink: 0;
     background-color: #f9f9f9;
     border-top: 1px solid #eee;
 }
@@ -101,8 +100,7 @@ body, html {
     word-wrap: break-word;
 }
 
-
-/* Estilos de tipografía (sin cambios) */
+/* Tipografía y enlaces (sin cambios) */
 .panel h1, .panel h2 {
     color: #1a1a1a;
     border-bottom: 2px solid #007aff;
