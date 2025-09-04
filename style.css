@@ -4,40 +4,105 @@ body, html {
     padding: 0;
     height: 100%;
     font-family: 'Inter', sans-serif;
-    background-color: #f0f2f5; /* Un fondo gris claro y suave */
+    background-color: #f0f2f5;
     color: #333;
-    overflow-x: auto; /* Habilita el scroll horizontal para todo el body */
-    overflow-y: hidden; /* Deshabilita el scroll vertical principal */
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-/* El contenedor principal que usa Flexbox para alinear los paneles horizontalmente */
+/* Contenedor principal */
 #main-container {
-    display: flex; /* ¡La clave de la maquetación! */
-    flex-direction: row; /* Alinea los hijos (paneles) en una fila */
-    align-items: stretch; /* Estira los paneles para que tengan la misma altura */
-    height: 100vh; /* Ocupa el 100% de la altura de la ventana */
-    width: fit-content; /* El contenedor crece para adaptarse al ancho de sus paneles */
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100vh;
+    width: fit-content;
 }
 
 /* Estilo para cada panel de contenido */
 .panel {
-    width: 550px; /* Ancho fijo para cada panel */
-    min-width: 550px; /* Evita que el panel se encoja */
-    height: 100vh; /* Ocupa toda la altura de la ventana */
-    flex-shrink: 0; /* ¡Crítico! Previene que los paneles se compriman */
-    box-sizing: border-box; /* El padding no afectará al ancho total */
-    padding: 2rem 3rem;
-    overflow-y: auto; /* Si el contenido es largo, aparece un scroll vertical DENTRO del panel */
-    border-right: 1px solid #dcdcdc; /* Línea sutil para separar los paneles */
+    width: 550px;
+    min-width: 550px;
+    height: 100vh;
+    flex-shrink: 0;
+    box-sizing: border-box;
     background-color: #ffffff;
-    transition: background-color 0.3s ease;
+    border-right: 1px solid #dcdcdc;
+    position: relative; /* Necesario para posicionar los botones de cierre */
+
+    /* Flexbox para la estructura interna (header, content, footer) */
+    display: flex;
+    flex-direction: column;
 }
 
 .panel:last-child {
-    border-right: none; /* El último panel no necesita borde a la derecha */
+    border-right: none;
 }
 
-/* Estilos de tipografía dentro de los paneles */
+/* --- NUEVO: Controles de cierre --- */
+.panel-controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.close-btn, .close-all-btn {
+    background-color: #e9e9eb;
+    color: #555;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.close-btn:hover, .close-all-btn:hover {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+/* --- NUEVO: Estructura interna del panel --- */
+.panel header, .panel-content, .panel-footer {
+    padding: 0 3rem;
+}
+
+.panel header {
+    padding-top: 2rem;
+}
+
+.panel-content {
+    flex-grow: 1; /* Hace que el contenido ocupe el espacio disponible */
+    overflow-y: auto; /* Scroll si el contenido es muy largo */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.panel-footer {
+    padding-bottom: 1.5rem;
+    flex-shrink: 0; /* Evita que el footer se encoja */
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+}
+
+.breadcrumb {
+    margin: 0;
+    padding-top: 1rem;
+    font-size: 0.8rem;
+    color: #666;
+    word-wrap: break-word;
+}
+
+
+/* Estilos de tipografía (sin cambios) */
 .panel h1, .panel h2 {
     color: #1a1a1a;
     border-bottom: 2px solid #007aff;
@@ -51,7 +116,6 @@ body, html {
     margin-bottom: 1rem;
 }
 
-/* Estilo para los enlaces, diseñados para ser claros y atractivos */
 .panel a {
     color: #007aff;
     text-decoration: none;
@@ -73,3 +137,4 @@ body, html {
 .panel li {
     margin-bottom: 0.5rem;
 }
+
