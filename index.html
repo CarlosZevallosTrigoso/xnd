@@ -8,11 +8,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Librería para la visualización del grafo -->
+    <script type="text/javascript" src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
 </head>
 <body>
 
+    <!-- Botón para mostrar el mapa -->
+    <button id="show-graph-btn">Ver Mapa</button>
+
     <main id="main-container">
-        <article class="panel" data-path='["Punto de Partida"]'>
+        <!-- El panel inicial se mantiene igual -->
+        <article class="panel" data-path='["Punto de Partida"]' data-id="Punto de Partida">
             <header>
                 <h1>Punto de Partida</h1>
             </header>
@@ -30,6 +36,15 @@
             </footer>
         </article>
     </main>
+
+    <!-- Estructura de la ventana modal para el grafo (inicialmente oculta) -->
+    <div id="graph-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span id="close-graph-btn" class="close-modal-btn">&times;</span>
+            <h2>Mapa de Navegación</h2>
+            <div id="graph-container"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 
